@@ -1,9 +1,19 @@
 var net = require('net');
 var http = require('http');
+var fs = require('fs');
 
 class HttpRequest {
     constructor({attrs}) {
         this.attrs = attrs;
+
+        this.logSomething = this.logSomething.bind(this);
+    }
+
+    // TODO - not working yet. will come back to this.
+    logSomething() {
+        fs.appendFile("proxy.log", this.attrs, (err) => {
+            console.log("Got an error.");
+        })
     }
 }
 
@@ -50,7 +60,7 @@ var server = net.createServer((socket) => {
         console.log("Client disconnected");
     });
     socket.on("data", (c) => {
-        parseHttpRequest(c.toString());
+        parseHttpRequest(c.toString()).log();
     });
 })
 
