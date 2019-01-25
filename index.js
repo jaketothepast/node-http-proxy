@@ -2,7 +2,7 @@ var net = require('net');
 var http = require('http');
 
 class HttpRequest {
-    constructor({...attrs}) {
+    constructor({attrs}) {
         this.type = attrs.type;
         this.headers = attrs.headers;
         this.body = attrs.body;
@@ -31,6 +31,7 @@ function parseHttpRequest(bytes) {
             httpRequestAttrs["type"] = typeInfo[0];
             httpRequestAttrs["path"] = typeInfo[1];
             httpRequestAttrs["httpVersion"] = typeInfo[2];
+
         } else {
             console.log(row);
         }
@@ -65,3 +66,5 @@ server.on("listening", (c) => {
 server.listen(8124, () => {
     console.log("Server bound.");
 })
+
+module.exports = [parseHttpRequest];
