@@ -3,9 +3,7 @@ var http = require('http');
 
 class HttpRequest {
     constructor({attrs}) {
-        this.type = attrs.type;
-        this.headers = attrs.headers;
-        this.body = attrs.body;
+        this.attrs = attrs;
     }
 }
 
@@ -14,7 +12,7 @@ class HttpRequest {
  * @param {String} bytes 
  */
 function parseHttpRequest(bytes) {
-    let httpRequestAttrs = {};
+    let httpRequestAttrs = {headers: ""};
 
     bytes.split("\r\n").map((row) => {
         // Match against HTTP verbs from the first row.
@@ -31,11 +29,12 @@ function parseHttpRequest(bytes) {
             httpRequestAttrs["type"] = typeInfo[0];
             httpRequestAttrs["path"] = typeInfo[1];
             httpRequestAttrs["httpVersion"] = typeInfo[2];
-
         } else {
-            console.log(row);
+            httpRequestAttrs.headers = httpRequestAttrs.headers.concat(row + "\r\n");
         }
-    })
+    });
+
+    return new HttpRequest(httpRequestAttrs);
 }
 
 /**
