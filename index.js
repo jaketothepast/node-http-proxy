@@ -2,6 +2,7 @@ var net = require('net');
 var http = require('http');
 var fs = require('fs');
 var winston = require("winston");
+var rp = require("request-promise");
 
 // Rudimentary logger.
 // TODO - Make this filename configurable.
@@ -40,8 +41,13 @@ class HttpRequest {
      * 
      * TODO - Implement me.
      */
-    async forwardRequest() {
-
+    forwardRequest(callbackFn) {
+        console.log("Forwarding.")
+        http.request({
+            host: this.attrs.headers.Host,
+            method: this.attrs.Method,
+            headers: this.attrs.headers
+        }, callbackFn);
     }
 }
 
@@ -92,10 +98,10 @@ function startServer() {
             parseHttpRequest(c.toString())
                 .then((req) => {
                     req.logSomething();
-                    return req;
-                })
-                .then((req) => {
-
+                    req.forwardRequest((res) => {
+                        console.log("Received response");
+                        console.log(res);
+                    });
                 })
         });
     })
