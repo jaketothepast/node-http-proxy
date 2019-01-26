@@ -28,13 +28,15 @@ To test, can either spin up the vagrant instance, or utilize the unit tests.
 
 The directory `./test` includes Python based tests intended to stress the proxy.
 To run them, install the requirements with Pip, then run
-`python3 test_proxy.py`
+`python3 test_proxy.py`. Ensure the proxy is running by running `node index.js` before testing.
 
 # TODO
 
-1. Setup a server that listens on a port
-2. Write a rudimentary parsing routine.
-3. Get Jest tests set up for the parsing routine
-4. Get Vagrantfile so can test with an actual browser that asks for a proxy
-5. Implement forwarding an HTTP request to the host after requesting it
-6. Return forwarded HTTP request to client after response is returned.
+1. ~~Setup a server that listens on a port~~
+2. ~~Write a rudimentary parsing routine.~~
+3. Get Jest tests set up for the parsing routine.
+4. Get Vagrantfile so can test with an actual browser that asks for a proxy.
+5. Implement forwarding an HTTP request to the host after requesting it.
+6. Return response from forwarded HTTP request to client.
+7. Add some sort of backing store for keeping track of how many requests go to certain hosts.
+8. Add blocking for going over time limits on hosts.
