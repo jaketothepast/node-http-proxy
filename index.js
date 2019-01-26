@@ -12,33 +12,39 @@ const logger = winston.createLogger({
     ]
 });
 
+/**
+ * Connection handler for proxy, forward request and then pipe response
+ * back to the client.
+ * 
+ * @param {IncomingMessage} request The request from the client
+ * @param {OutgoingMessage} response The response to write back to the client
+ */
+const processRequest = (request, response) => {
+    let body = [];
+    // Use closure for request.
+    let req = request;
+    let res = response;
+
+    // Set up a data handler for the socket connection.
+    request.on("data", (chunk) => {
+        body.push(chunk);
+    })
+    
+    // Set up an end handler for the socket connection.
+    request.on("end", () => {
+        body = Buffer.concat(body).toString();
+        logger.info({message: "Got a message!"});
+        logger.info({message: "Requesting: " + req.url});
+
+        // Complicated line of JS to forward request, and pipe it to the
+        // response object.
+        req.pipe(http.request(req.url, (resp) => {resp.pipe(res)}));
+    });
+}
 
 function startServer() {
     // Start the server, set up data and end handlers.
-    var server = http.createServer();
-    server.on('request', (request, response) => {
-        let body = [];
-        // Use closure for request.
-        let req = request;
-        let res = response;
-
-        request.on("data", (chunk) => {
-            body.push(chunk);
-        }).on("end", () => {
-            body = Buffer.concat(body).toString();
-
-            console.log(req.path);
-            logger.info({message: "Got a message!"});
-            logger.info({message: req});
-            let connector = http.request(
-                req.headers["Host"], {
-                    headers: req.headers,
-                }, (resp) => {
-                    resp.pipe(res);
-                });
-            req.pipe(connector);
-        })
-    })
+    var server = http.createServer(processRequest);
 
     // Start the server
     server.listen(8124, () => {
