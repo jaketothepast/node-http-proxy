@@ -24,8 +24,8 @@ class HttpRequest {
         })
     }
 
-    forwardRequest() {
-
+    async forwardRequest() {
+        // TODO - rebuild the request and return it to the client.
     }
 }
 
@@ -34,7 +34,7 @@ class HttpRequest {
  * @param {String} bytes 
  */
 async function parseHttpRequest(bytes) {
-    let httpRequestAttrs = {headers: ""};
+    let httpRequestAttrs = {headers: {}};
 
     bytes.split("\r\n").map((row) => {
         // Match against HTTP verbs from the first row.
@@ -48,11 +48,14 @@ async function parseHttpRequest(bytes) {
                 return null;
             }
 
-            httpRequestAttrs["type"] = typeInfo[0];
-            httpRequestAttrs["path"] = typeInfo[1];
-            httpRequestAttrs["httpVersion"] = typeInfo[2];
+            httpRequestAttrs["Method"] = typeInfo[0];
+            httpRequestAttrs["Path"] = typeInfo[1];
+            httpRequestAttrs["HttpVersion"] = typeInfo[2];
         } else {
-            httpRequestAttrs.headers = httpRequestAttrs.headers.concat(row + "\r\n");
+            let currentRow = row.split(":");
+            console.log(currentRow);
+            if (currentRow[0] !== '')
+                httpRequestAttrs.headers[currentRow[0]] = currentRow[1].trim();
         }
     });
 
@@ -77,6 +80,10 @@ function startServer() {
             parseHttpRequest(c.toString())
                 .then((req) => {
                     req.logSomething();
+                    return req;
+                })
+                .then((req) => {
+
                 })
         });
     })
