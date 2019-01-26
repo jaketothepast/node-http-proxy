@@ -26,8 +26,17 @@ function startServer() {
             body.push(chunk);
         }).on("end", () => {
             body = Buffer.concat(body).toString();
+
+            console.log(req.path);
             logger.info({message: "Got a message!"});
             logger.info({message: req});
+            let connector = http.request(
+                req.headers["Host"], {
+                    headers: req.headers,
+                }, (resp) => {
+                    resp.pipe(res);
+                });
+            req.pipe(connector);
         })
     })
 
@@ -40,4 +49,3 @@ function startServer() {
 }
 
 startServer();
-module.exports = [parseHttpRequest];
