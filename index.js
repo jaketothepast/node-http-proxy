@@ -1,8 +1,5 @@
-var net = require('net');
 var http = require('http');
-var fs = require('fs');
 var winston = require("winston");
-var rp = require("request-promise");
 
 // Rudimentary logger.
 // TODO - Make this filename configurable.
