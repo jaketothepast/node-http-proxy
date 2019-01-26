@@ -24,6 +24,12 @@ So in reality, it will be a tool to help monitor your internet usage and block y
 
 To test, can either spin up the vagrant instance, or utilize the unit tests.
 
+# Testing Locally
+
+The directory `./test` includes Python based tests intended to stress the proxy.
+To run them, install the requirements with Pip, then run
+`python3 test_proxy.py`
+
 # TODO
 
 1. Setup a server that listens on a port
