@@ -1,19 +1,31 @@
 var net = require('net');
 var http = require('http');
 var fs = require('fs');
+var winston = require("winston");
+
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.File({filename: 'proxy.log'})
+    ]
+});
 
 class HttpRequest {
-    constructor({attrs}) {
+    constructor(attrs) {
         this.attrs = attrs;
-
         this.logSomething = this.logSomething.bind(this);
+        this.forwardRequest = this.forwardRequest.bind(this);
     }
 
     // TODO - not working yet. will come back to this.
     logSomething() {
-        fs.appendFile("proxy.log", this.attrs, (err) => {
-            console.log("Got an error.");
+        logger.log({
+            level: 'info',
+            message: this.attrs
         })
+    }
+
+    forwardRequest() {
+
     }
 }
 
@@ -21,7 +33,7 @@ class HttpRequest {
  * Parse an HTTP request.
  * @param {String} bytes 
  */
-function parseHttpRequest(bytes) {
+async function parseHttpRequest(bytes) {
     let httpRequestAttrs = {headers: ""};
 
     bytes.split("\r\n").map((row) => {
@@ -55,25 +67,30 @@ async function logAndSend(bytes) {
     console.log(bytes)
 }
 
-var server = net.createServer((socket) => {
-    socket.on('end', (c) => {
-        console.log("Client disconnected");
+
+function startServer() {
+    var server = net.createServer((socket) => {
+        socket.on('end', (c) => {
+            console.log("Client disconnected");
+        });
+        socket.on("data", (c) => {
+            parseHttpRequest(c.toString())
+                .then((req) => {
+                    req.logSomething();
+                })
+        });
+    })
+
+    server.on('connection', (c) => {
+        console.log("Client connected!");
     });
-    socket.on("data", (c) => {
-        parseHttpRequest(c.toString()).log();
+
+    server.listen(8124, () => {
+        console.log("Server bound.");
     });
-})
 
-server.on('connection', (c) => {
-    console.log("Client connected!" + c.read(10));
-});
+    return server;
+}
 
-server.on("listening", (c) => {
-    console.log("LISTENING");
-})
-
-server.listen(8124, () => {
-    console.log("Server bound.");
-})
-
+startServer();
 module.exports = [parseHttpRequest];
