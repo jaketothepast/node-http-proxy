@@ -36,7 +36,8 @@ To run them, install the requirements with Pip, then run
 2. ~~Write a rudimentary parsing routine.~~
 3. Get Jest tests set up for the parsing routine.
 4. Get Vagrantfile so can test with an actual browser that asks for a proxy.
-5. Implement forwarding an HTTP request to the host after requesting it.
-6. Return response from forwarded HTTP request to client.
+5. ~~Implement forwarding an HTTP request to the desired host after proxy request.~~
+6. ~~Return response from forwarded HTTP request to client.~~
 7. Add some sort of backing store for keeping track of how many requests go to certain hosts.
+    - Adding sqlite.
 8. Add blocking for going over time limits on hosts.
