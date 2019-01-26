@@ -4,6 +4,7 @@ import requests
 http_proxy = "http://127.0.0.1:8124"
 
 def test_proxy_basic():
-    resp = requests.get("http://google.com", proxies={"http": http_proxy})
-    
+    resp = requests.get("http://alibaba.com", proxies={"http": http_proxy})
+    assert resp.status_code == 200
+
     
