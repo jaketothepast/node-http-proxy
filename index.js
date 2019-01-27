@@ -1,5 +1,8 @@
 var http = require('http');
 var winston = require("winston");
+var fs = require("fs");
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database("./proxy.db");
 
 // Rudimentary logger.
 // TODO - Make this filename configurable.
@@ -51,4 +54,29 @@ function startServer() {
     return server;
 }
 
+/**
+ * Initialize our database.
+ */
+function initializeDatabase() {
+    db.serialize(() => {
+        db.run("create table hosts (hostname TEXT visitcount INTEGER)", (res, err) => {
+            if (err !== undefined || err !== null) {
+                console.log("Error creating database, it likely exists already.");
+            }
+        });
+    });
+    db.close();
+}
+
+/**
+ * Update the visit count for a host logged by the proxy
+ * @param {string} hostname Host logged by proxy
+ */
+function updateVisitCount(hostname) {
+    db.serialize(() => {
+        db.run("update hosts set visitcount = visitcount + 1 where hostname = (?)", [hostname]);
+    });
+}
+
+initializeDatabase();
 startServer();
