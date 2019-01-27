@@ -38,7 +38,7 @@ const processRequest = (request, response) => {
         logger.info({message: "Requesting: " + req.url});
 
         const hostUrl = new url.URL(req.url);
-        addHostToTable(hostUrl.hostname);
+        visitHost(hostUrl.hostname);
         // Complicated line of JS to forward request, and pipe it to the
         // response object.
         req.pipe(http.request(req.url, (resp) => {resp.pipe(res)}));
@@ -67,7 +67,7 @@ function startServer() {
  */
 function initializeDatabase() {
     db.serialize(() => {
-        db.run("create table hosts (hostname TEXT visitcount INTEGER)", (res, err) => {
+        db.run("create table hosts (hostname TEXT, visitcount Int)", (err, row) => {
             if (err !== undefined || err !== null) {
                 console.log("Error creating database, it likely exists already.");
             }
@@ -82,16 +82,28 @@ function initializeDatabase() {
  */
 function updateVisitCount(hostname) {
     db.serialize(() => {
-        db.run("update hosts set visitcount = visitcount + 1 where hostname = (?)", [hostname]);
+        db.run("update hosts set visitcount = visitcount + 1 where hostname = ?", [hostname]);
     });
     // db.close();
 }
 
 function addHostToTable(hostname) {
     db.serialize(() => {
-        db.run("insert into hosts (hostname visitcount) values (? ?)", [hostname, 0])
+        db.run("insert into hosts (hostname, visitcount) values (?, 0)", [hostname])
     })
     // db.close();
+}
+
+function visitHost(hostname) {
+    return db.serialize(() => {
+        db.get("select * from hosts where hostname = ?", [hostname], (err, row) => {
+            if (row === undefined) {
+                addHostToTable(hostname);
+            } else {
+                updateVisitCount(hostname);
+            }
+        })
+    });
 }
 
 initializeDatabase();
