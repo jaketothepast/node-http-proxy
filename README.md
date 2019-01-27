@@ -9,7 +9,7 @@ am familiar with the language.
 My goal for this project is to have it be easy to spin up, and compatible with major browsers. It will do 2 things.
 
 1. It will monitor application-level traffic (anything over HTTP/HTTPS) - and log it.
-2. It will block traffic after it's detected that you've been on a certain site for too long.
+2. It will block traffic after it's detected that you've visited a site too much.
 
 In the future I would like it to:
 
@@ -38,6 +38,8 @@ To run them, install the requirements with Pip, then run
 4. Get Vagrantfile so can test with an actual browser that asks for a proxy.
 5. ~~Implement forwarding an HTTP request to the desired host after proxy request.~~
 6. ~~Return response from forwarded HTTP request to client.~~
-7. Add some sort of backing store for keeping track of how many requests go to certain hosts.
-    - Adding sqlite.
-8. Add blocking for going over time limits on hosts.
+7. ~~Add some sort of backing store for keeping track of how many requests go to certain hosts.~~
+    - ~~Adding sqlite.~~
+8. Add blocking for going over ~~time limits~~ *visit limits* on hosts.
+9. Add some sort of configuration management, through a config file, and eventually a web interface.
+10. HTTPS support (ooh, ahh).

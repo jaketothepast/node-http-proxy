@@ -33,13 +33,14 @@ const processRequest = (request, response) => {
     // Set up an end handler for the socket connection.
     request.on("end", () => {
         body = Buffer.concat(body).toString();
-        logger.info({message: "Got a message!"});
         logger.info({message: "Requesting: " + req.url});
 
         const hostUrl = new url.URL(req.url);
         myDb.visitHost(hostUrl.hostname);
         // Complicated line of JS to forward request, and pipe it to the
         // response object.
+        //
+        // Uses closures to ensure that both req and res are what I want.
         req.pipe(http.request(req.url, (resp) => {resp.pipe(res)}));
     });
 }
