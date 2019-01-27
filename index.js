@@ -3,6 +3,7 @@ var winston = require("winston");
 var fs = require("fs");
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database("./proxy.db");
+const url = require("url");
 
 // Rudimentary logger.
 // TODO - Make this filename configurable.
@@ -36,6 +37,8 @@ const processRequest = (request, response) => {
         logger.info({message: "Got a message!"});
         logger.info({message: "Requesting: " + req.url});
 
+        const hostUrl = new url.URL(req.url);
+        addHostToTable(hostUrl.hostname);
         // Complicated line of JS to forward request, and pipe it to the
         // response object.
         req.pipe(http.request(req.url, (resp) => {resp.pipe(res)}));
@@ -54,6 +57,11 @@ function startServer() {
     return server;
 }
 
+/** TODO - MAKE THESE FUNCTIONS THEIR OWN MODULE. VVV 
+ *  FIXME - need to close the database connection
+ *          on exit.
+ */
+
 /**
  * Initialize our database.
  */
@@ -65,7 +73,7 @@ function initializeDatabase() {
             }
         });
     });
-    db.close();
+    // db.close();
 }
 
 /**
@@ -76,6 +84,14 @@ function updateVisitCount(hostname) {
     db.serialize(() => {
         db.run("update hosts set visitcount = visitcount + 1 where hostname = (?)", [hostname]);
     });
+    // db.close();
+}
+
+function addHostToTable(hostname) {
+    db.serialize(() => {
+        db.run("insert into hosts (hostname visitcount) values (? ?)", [hostname, 0])
+    })
+    // db.close();
 }
 
 initializeDatabase();
