@@ -40,6 +40,6 @@ To run them, install the requirements with Pip, then run
 6. ~~Return response from forwarded HTTP request to client.~~
 7. ~~Add some sort of backing store for keeping track of how many requests go to certain hosts.~~
     - ~~Adding sqlite.~~
-8. Add blocking for going over ~~time limits~~ *visit limits* on hosts.
+8. ~~Add blocking for going over ~~time limits~~ *visit limits* on hosts.~~
 9. Add some sort of configuration management, through a config file, and eventually a web interface.
 10. HTTPS support (ooh, ahh).
