@@ -12,4 +12,8 @@ def test_proxy_block_page():
     for i in range(2):
         requests.get("http://httpbin.org", proxies={"http": http_proxy})
     assert requests.get("http://httpbin.org", proxies={"http": http_proxy}).status_code == 403
+
+def test_blocked_file():
+    resp = requests.get("http://wikipedia.org", proxies={"http": http_proxy})
+    assert resp.status_code == 403
     
